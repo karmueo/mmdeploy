@@ -4,6 +4,7 @@ from functools import partial
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 import torch
+from torch.onnx import TrainingMode
 
 from mmdeploy.apis.core import PIPELINE_MANAGER
 from mmdeploy.core import RewriterContext, patch_model
@@ -135,6 +136,8 @@ def export(model: torch.nn.Module,
             args = tuple([_.cpu() for _ in args])
         else:
             raise RuntimeError(f'Not supported args: {args}')
+
+        patched_model.eval()
         torch.onnx.export(
             patched_model,
             args,
@@ -145,7 +148,8 @@ def export(model: torch.nn.Module,
             opset_version=opset_version,
             dynamic_axes=dynamic_axes,
             keep_initializers_as_inputs=keep_initializers_as_inputs,
-            verbose=verbose)
+            verbose=verbose,
+            training=TrainingMode.EVAL)
 
         if input_metas is not None:
             patched_model.forward = model_forward

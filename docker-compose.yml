@@ -1,0 +1,22 @@
+services:
+  mmdeploy:
+    image: openmmlab/mmdeploy:ubuntu20.04-cuda11.8-mmdeploy1.3.1
+    container_name: mmdeploy-container
+    network_mode: host  # 等效于 --net=host
+    runtime: nvidia     # 启用 NVIDIA GPU 支持
+    volumes:
+      - "/home/tl/work:/work" # 挂载工作目录
+    environment:
+      - HTTP_PROXY=http://192.168.1.81:7890
+      - HTTPS_PROXY=http://192.168.1.81:7890
+    privileged: true    # 特权模式
+    cap_add:
+      - SYS_PTRACE     # 允许 ptrace 调试
+    working_dir: /work/mmdeploy  # 设置工作目录
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'Alive' || exit 1"]  # 简单心跳检测
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    stdin_open: true  # 保持标准输入打开
+    tty: true         # 启用伪终端
