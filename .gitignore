@@ -176,3 +176,5 @@ docs/cppapi/docs
 mmdeploy_models
 
 *.mp4
+input_data.txt
+output.bin
